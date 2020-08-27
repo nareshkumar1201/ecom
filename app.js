@@ -8,6 +8,7 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
 const multer = require("multer");
+const uuidv4 = require("uuid/v4");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
@@ -27,7 +28,8 @@ const fileStorage = multer.diskStorage({
     cb(null, "images");
   },
   filename: (req, file, cb) => {
-    cb(null, new Date().toISOString() + "-" + file.originalname);
+    cb(null, uuidv4());
+    // cb(null, uuidv4() + "-" + file.originalname);
   },
 });
 
@@ -42,8 +44,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // app.use(multer({ dest: "image" }).single("image"));
 app.use(multer({ storage: fileStorage }).single("image"));
-
 app.use(express.static(path.join(__dirname, "public")));
+
 app.use(
   session({
     secret: "my secret",
@@ -91,7 +93,10 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-  .connect(MONGODB_URI)
+  .connect(MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then((result) => {
     app.listen(3000);
   })

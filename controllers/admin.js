@@ -17,7 +17,7 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
-  const imageUrl = req.file;
+  const imageUrl = req.file.path.replace("//", "/");
   const price = req.body.price;
   const description = req.body.description;
   const errors = validationResult(req);
@@ -70,9 +70,7 @@ exports.postAddProduct = (req, res, next) => {
       //   validationErrors: []
       // });
       // res.redirect('/500');
-      const error = new Error(
-        "Seems to be a technical Error .. try after sometime"
-      );
+      const error = new Error(err);
       error.httpStatusCode = 500;
       return next(error);
     });
